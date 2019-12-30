@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  AsyncStorage,
   View,
   KeyboardAvoidingView,
   StyleSheet,
@@ -10,8 +11,20 @@ import {
   TouchableOpacity
 } from 'react-native';
 import logo from '../assets/logo.png';
+import api from '../services/api';
 
 export default function Login() {
+  const [email, setEmail] = useState();
+  const [techs, setTechs] = useState();
+  async function handleSubmit() {
+    const result = await api.post('/session', {
+      email
+    });
+    const { _id } = result.data;
+    await AsyncStorage.setItem('user', _id);
+    await AsyncStorage.setItem('techs', techs);
+  }
+
   return (
     <KeyboardAvoidingView enabled={Platform.OS === 'IOS'} behavior='padding' style={styles.container}>
       <Image source={logo} />
@@ -24,6 +37,8 @@ export default function Login() {
           keyboardType='email-address'
           autoCapitalize='none'
           autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
         />
 
         <Text style={styles.label}>Tecnologias * </Text>
@@ -33,9 +48,11 @@ export default function Login() {
           placeholderTextColor='#999'
           autoCapitalize='words'
           autoCorrect={false}
+          value={techs}
+          onChangeText={setTechs}
         />
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity onPress={handleSubmit} style={styles.button}>
           <Text style={styles.buttonText}>Buscar spots</Text>
         </TouchableOpacity>
       </View>
@@ -67,7 +84,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     paddingHorizontal: 20,
     fontSize: 16,
-    color: 44,
+    color: '#444',
     marginBottom: 20,
     borderRadius: 2
   },
