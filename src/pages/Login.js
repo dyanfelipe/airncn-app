@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AsyncStorage,
   View,
   KeyboardAvoidingView,
   StyleSheet,
-  Platform,
   Image,
   Text,
   TextInput,
@@ -13,9 +12,18 @@ import {
 import logo from '../assets/logo.png';
 import api from '../services/api';
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [email, setEmail] = useState();
   const [techs, setTechs] = useState();
+
+  useEffect(() => {
+    AsyncStorage.getItem('user').then(user => {
+      if (user) {
+        navigation.navigate('List');
+      }
+    });
+  }, []);
+
   async function handleSubmit() {
     const result = await api.post('/session', {
       email
@@ -23,10 +31,11 @@ export default function Login() {
     const { _id } = result.data;
     await AsyncStorage.setItem('user', _id);
     await AsyncStorage.setItem('techs', techs);
+    navigation.navigate('List');
   }
 
   return (
-    <KeyboardAvoidingView enabled={Platform.OS === 'IOS'} behavior='padding' style={styles.container}>
+    <KeyboardAvoidingView behavior='padding' style={styles.container}>
       <Image source={logo} />
       <View style={styles.form}>
         <Text style={styles.label}>Seu E-mail * </Text>
