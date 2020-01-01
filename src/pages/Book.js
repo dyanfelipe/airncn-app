@@ -8,7 +8,6 @@ export default function Book({ navigation }) {
 
   async function handleSubmit() {
     const userid = await AsyncStorage.getItem('user');
-    console.log('pok');
     await api.post(
       `/spots/${id}/booking`,
       {
@@ -26,6 +25,7 @@ export default function Book({ navigation }) {
   function handleCancel() {
     navigation.navigate('List');
   }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.label}>Data de Interesse * </Text>
